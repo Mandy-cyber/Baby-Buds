@@ -25,9 +25,6 @@ class Expert(db.Model, UserMixin):
     comments = db.relationship('Comment', backref='expert', passive_deletes=True)
     can_comment = db.Column(db.String(6), default="true")
 
-    @hybrid_property
-    def username(self):
-        return f"{self.first_name} {self.last_name}"
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)

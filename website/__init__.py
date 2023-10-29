@@ -6,8 +6,11 @@ from flask_login import LoginManager
 db = SQLAlchemy()
 DB_NAME = "database.db"
 
+
 def create_app():
     app = Flask(__name__)
+
+    # encrypt cookies & session data, database information (passwords)
     app.config['SECRET_KEY'] = "reufijpweodsp"
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
     db.init_app(app)
@@ -22,9 +25,9 @@ def create_app():
 
     with app.app_context():
         db.create_all()
-    
-    lm = LoginManager() # login manager creates a session, default = 30 days
-    lm.login_view = "auth.login" # redirects to login page if they are not logged in
+
+    lm = LoginManager()  # login manager creates a session, default = 30 days
+    lm.login_view = "auth.login"  # redirects to login page if they are not logged in
     lm.init_app(app)
 
     @lm.user_loader
@@ -33,11 +36,9 @@ def create_app():
         mom = Mom.query.filter_by(id=id)
         if mom:
             return Mom.query.get(int(id))
-        
+
         expert = Expert.query.filter_by(id=id)
         if expert:
             return Expert.query.get(int(id))
-        
-        
 
     return app

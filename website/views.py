@@ -8,18 +8,21 @@ import webbrowser
 
 views = Blueprint("views", __name__)
 
-#------------------------------------------------------------------------
+# ------------------------------------------------------------------------
 # GENERAL
-#------------------------------------------------------------------------
+# ------------------------------------------------------------------------
+
 @views.route("/forum")
-@views.route("/")
+@views.route("/")  # default homepage
 def forum():
     posts = Post.query.all()
     return render_template("forum.html", user=current_user, posts=posts)
 
+
 @views.route("/resources")
 def resources():
     return render_template("resources.html", user=current_user)
+
 
 @views.route("/profile", methods=["GET", "POST"])
 @login_required
@@ -38,33 +41,37 @@ def signup():
     return render_template('mom_or_expert.html', user=current_user)
 
 
-#------------------------------------------------------------------------
+# ------------------------------------------------------------------------
 # FORUM PAGES
-#------------------------------------------------------------------------
+# ------------------------------------------------------------------------
 
 @views.route("/baby-health")
 def baby_health():
     posts = Post.query.filter_by(category='Baby Health').all()
     return render_template("forum.html", user=current_user, posts=posts)
 
+
 @views.route("/mom-health")
 def mom_health():
     posts = Post.query.filter_by(category='Mom Health').all()
     return render_template("forum.html", user=current_user, posts=posts)
+
 
 @views.route("/tips-and-tricks")
 def tips_and_tricks():
     posts = Post.query.filter_by(category='Tips and Tricks').all()
     return render_template("forum.html", user=current_user, posts=posts)
 
+
 @views.route("/support")
 def support():
     posts = Post.query.filter_by(category='Support').all()
     return render_template("forum.html", user=current_user, posts=posts)
 
-#------------------------------------------------------------------------
+# ------------------------------------------------------------------------
 # POSTS
-#------------------------------------------------------------------------
+# ------------------------------------------------------------------------
+
 @views.route("/create-post", methods=['GET', 'POST'])
 @login_required
 def create_post():
@@ -76,7 +83,8 @@ def create_post():
         if not post_content:
             flash('Post cannot be empty', category='error')
         else:
-            post = Post(title=post_title, content=post_content, mauthor=current_user.id, category=category)
+            post = Post(title=post_title, content=post_content,
+                        mauthor=current_user.id, category=category)
             db.session.add(post)
             db.session.commit()
             flash('Post created!', category='success')
@@ -92,7 +100,7 @@ def delete_post(post_id):
 
     if not post:
         flash('Post does not exist.', category='error')
-    elif current_user.id != post.mom.id:
+    elif current_user.email != post.mom.email:
         flash('You do not have permission to delete this post.', category='error')
     else:
         db.session.delete(post)
@@ -100,9 +108,10 @@ def delete_post(post_id):
 
     return redirect(url_for('views.forum'))
 
-#------------------------------------------------------------------------
+# ------------------------------------------------------------------------
 # COMMENTS
-#------------------------------------------------------------------------
+# ------------------------------------------------------------------------
+
 @views.route("/create-comment/<post_id>", methods=['POST'])
 @login_required
 def create_comment(post_id):
@@ -138,9 +147,10 @@ def delete_comment(comment_id):
 
     return redirect(url_for('views.forum'))
 
-#------------------------------------------------------------------------
+# ------------------------------------------------------------------------
 # PRODUCTS
-#------------------------------------------------------------------------
+# ------------------------------------------------------------------------
+
 @views.route("/list-product", methods=['GET', 'POST'])
 @login_required
 def list_product():
@@ -150,19 +160,20 @@ def list_product():
         category = request.form.get('category')
         description = request.form.get('description')
         price = request.form.get('price')
-        # DONT DO THIS AT HOME <3
-        image = request.files['file'] 
-        image.save(f"website/static/assets/{image.filename}")   
+        image = request.files['file']
+        image.save(f"website/static/assets/{image.filename}")
 
         if not name:
-            flash('Please remember to add a name to your product <3', category='error')
+            flash('Please remember to add a name to your product <3',
+                  category='error')
         elif not price:
             flash('Please remember to add a price to your product, or 0.00!')
         elif not category:
             flash('Please remember to add a category to your product, or 0.00!')
         else:
             print("This ran")
-            product = Product(name=name, age=age, description=description, mauthor=current_user.id, price=price, category=category, img=image.filename)
+            product = Product(name=name, age=age, description=description,
+                              mauthor=current_user.id, price=price, category=category, img=image.filename)
             print("This ran pt2")
             db.session.add(product)
             print("This ran pt3")
@@ -188,9 +199,10 @@ def delete_product(product_id):
 
     return redirect(url_for('views.hand_me_down'))
 
-
+# ------------------------------------------------------------------------
 # EMAIL SENDING
-#---------------------------
+# ------------------------------------------------------------------------
+
 @views.route("/send-email/<email1>/<prod_name>", methods=['GET', 'POST'])
 def send_email(email1, prod_name):
     if request.method == "POST":

@@ -2,7 +2,6 @@
 {% block title %}Create A Post{% endblock title %}
 
 {% block content %}
-<!-- id(?) title, content, date created(?), mauthor, comments, category -->
 <form method="POST">
     <div class="centered-form">
         <h3>Create Post</h3>
@@ -20,8 +19,6 @@
         <textarea name="content" id="content" class="form-control"></textarea>
     
         <br>
-
-        <!-- Revisit categories -->
         <label>Select Category</label>
         <br>
         <div class="categoryIcon">
@@ -36,7 +33,6 @@
             />
             <img class="avatar-img" src="{{ url_for('static', filename='assets/babyHealth.png') }}" alt="Mom"/>
         </label>
-
         <label>
             <input 
                 class="form-control" 
@@ -48,7 +44,6 @@
             />
             <img class="avatar-img" src="{{ url_for('static', filename='assets/tipsAndTricks.png') }}" alt="Mom"/>
         </label>
-
         <label>
             <input 
                 class="form-control" 
@@ -60,7 +55,6 @@
             />
             <img class="avatar-img" src="{{ url_for('static', filename='assets/support.png') }}" alt="Mom"/>
         </label>
-
         <label>
             <input 
                 class="form-control" 
@@ -72,16 +66,7 @@
             <img class="avatar-img" src="{{ url_for('static', filename='assets/momHealth.png') }}" alt="Mom"/>
         </label>
     </div>
-        <br>
-        <br>
-        <br>
-        
         <button type="submit" class="submit-buttons">Submit Post</button>
-
-        <br>
-        <br>
-        <br>
-        <br>
     </div>
     
 </form>

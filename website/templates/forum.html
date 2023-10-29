@@ -1,88 +1,97 @@
-{% extends "base.html"%}
-{% block title %}Baby Buds{% endblock title %}
+{% extends "base.html"%} {% block title %}Baby Buds{% endblock title %} {% block
+content %}
+<h1 class="titling">The Forum</h1>
 
-{% block content %}
-
-<!-- Filter Buttons :D -->
-<br>
-<br>
-<br>
-
-<h1 class="titling">
-    The Forum
-</h1>
-
-<br>
-<br>
-<br>
+<br />
+<br />
 
 <div class="iconRow">
-  <a class="icon-links" href="/baby-health"><img src="{{ url_for('static', filename='assets/babyHealth.png') }}" alt="Two small hearts titled Baby Health"></a>
-  <a class="icon-links" href="/tips-and-tricks"><img src="{{ url_for('static', filename='assets/tipsAndTricks.png') }}" alt="A packet of seeds titled Tips and Tricks"></a>
-  <a class="icon-links" href="/support"><img src="{{ url_for('static', filename='assets/support.png') }}" alt="Two hands showing support and wearing gardening gloves titled Support"></a>
-  <a class="icon-links" href="/mom-health"><img src="{{ url_for('static', filename='assets/momHealth.png') }}" alt="A large heart titled Mom Health"></a>
+  <a class="icon-links" href="/baby-health"
+    ><img
+      src="{{ url_for('static', filename='assets/babyHealth.png') }}"
+      alt="Two small hearts titled Baby Health"
+  /></a>
+  <a class="icon-links" href="/tips-and-tricks"
+    ><img
+      src="{{ url_for('static', filename='assets/tipsAndTricks.png') }}"
+      alt="A packet of seeds titled Tips and Tricks"
+  /></a>
+  <a class="icon-links" href="/support"
+    ><img
+      src="{{ url_for('static', filename='assets/support.png') }}"
+      alt="Two hands showing support and wearing gardening gloves titled Support"
+  /></a>
+  <a class="icon-links" href="/mom-health"
+    ><img
+      src="{{ url_for('static', filename='assets/momHealth.png') }}"
+      alt="A large heart titled Mom Health"
+  /></a>
 </div>
 
 <!-- Make a post -->
 {% if user.can_comment == "false" %}
-    <div style="text-align: center;"><a href="/create-post"><button id="make-post-button">Make a Post</button></a></div>
-{% endif%} 
-
-  <!-- Blog post section -->
-  {% for post in posts %}
-    <div class="container mt-1">
-        <div class="card">
-        <div class="card-body">
-            <div class="row">
-                <div class="col-2">
-                    <img src="{{ url_for('static', filename='assets/flowers.png') }}" alt="User Icon" class="img-fluid">
-                </div>
-                <div class="col-8">
-                    <h2>{{ post.title }}</h2>
-                    <h5 class="card-title">{{ post.mom.username }}</h5>
-                </div>
-                <div class="col-2 text-right">
-                    {% if user.id == post.mom.id and user.can_comment == 'false' %}
-                    <a href="/delete-post/{{post.id}}" class="compost-button">
-                        <img class="compost-image" src="{{ url_for('static', filename='assets/compost_bin.png') }}">
-                    </a>
-                    {% endif %}
-                </div>
-            </div>
-            
-            <p class="card-text">{{ post.content }}</p>
-
-            <!-- Comment Section -->
-            <div class="comment-section">
-                <h4>Comments</h4>
-                {% for comment in post.comments %}
-                <div class="comment">
-                    <p><strong>{{ comment.expert.username }}</strong> {{ comment.text }}</p>
-                </div>
-                {% endfor %}
-
-                <br>
-                <form method="POST" action="/create-comment/{{post.id}}">
-                    <label for="text">Add a Comment</label>
-                    <input 
-                        class="form-control"
-                        type="text" 
-                        id="comment"
-                        name="comment"
-                        placeholder="Write your comment here"
-                    />
-                    <br>
-                    <button type="submit" class="submit-buttons">Submit</button>
-                </form>
-
-                <br>
-            </div>
-        </div>
-    </div>
+<div style="text-align: center">
+  <a href="/create-post"><button id="make-post-button">Make a Post</button></a>
 </div>
-{% endfor %}
+{% endif%}
 
+<!-- Blog post section -->
+{% for post in posts %}
+<div class="container mt-1">
+  <div class="card">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-2">
+          <img
+            src="{{ url_for('static', filename='assets/flowers.png') }}"
+            alt="User Icon"
+            class="img-fluid"
+          />
+        </div>
+        <div class="col-8">
+          <h2>{{ post.title }}</h2>
+          <h5 class="card-title">{{ post.mom.username }}</h5>
+        </div>
+        <div class="col-2 text-right">
+          {% if user.email == post.mom.email and user.can_comment == 'false' %}
+          <a href="/delete-post/{{post.id}}" class="compost-button">
+            <img
+              class="compost-image"
+              src="{{ url_for('static', filename='assets/compost_bin.png') }}"
+            />
+          </a>
+          {% endif %}
+        </div>
+      </div>
 
-  
+      <p class="card-text">{{ post.content }}</p>
 
-{% endblock content %}
+      <!-- Comment Section -->
+      <div class="comment-section">
+        <h4>Comments</h4>
+        {% for comment in post.comments %}
+        <div class="comment">
+          <p>
+            <strong>{{ comment.expert.username }}</strong> {{ comment.text }}
+          </p>
+        </div>
+        {% endfor %}
+        <br />
+        <form method="POST" action="/create-comment/{{post.id}}">
+          <label for="text">Add a Comment</label>
+          <input
+            class="form-control"
+            type="text"
+            id="comment"
+            name="comment"
+            placeholder="Write your comment here"
+          />
+          <br />
+          <button type="submit" class="submit-buttons">Submit</button>
+        </form>
+        <br />
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %} {% endblock content %}

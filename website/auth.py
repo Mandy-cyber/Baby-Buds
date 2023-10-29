@@ -1,7 +1,7 @@
 from flask import Blueprint, flash, render_template, redirect, url_for, request
 from flask_login import current_user, login_user, login_required, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from .models import Mom, Expert, Product, Comment, Post
+from .models import Mom, Expert
 from . import db
 
 auth = Blueprint("auth", __name__)
@@ -18,7 +18,7 @@ def login():
         else:
             user = Mom.query.filter_by(email=email).first()
 
-        if user:
+        if email_in_use(email):
             if check_password_hash(user.password, password):
                 flash("Logged in!", category='success')
                 login_user(user, remember=True)
@@ -39,9 +39,7 @@ def sign_up_expert():
         password1 = request.form.get("password1")
         password2 = request.form.get("password2")
 
-        email_exists = Expert.query.filter_by(email=email).first()
-
-        if email_exists:
+        if email_in_use(email):
             flash('Email is already in use.', category='error')
         elif password1 != password2:
             flash('Password don\'t match!', category='error')
@@ -50,10 +48,10 @@ def sign_up_expert():
         elif len(email) < 4:
             flash("Email is invalid.", category='error')
         else:
-            new_expert = Expert(email=email, first_name=first_name, 
+            new_expert = Expert(email=email, first_name=first_name,
                                 last_name=last_name, password=generate_password_hash(
-                password1, method='sha256'))
-            
+                                    password1, method='sha256'))
+
             db.session.add(new_expert)
             db.session.commit()
             login_user(new_expert, remember=True)
@@ -61,6 +59,7 @@ def sign_up_expert():
             return redirect(url_for('views.forum'))
 
     return render_template("signup_expert.html", user=current_user)
+
 
 @auth.route("/sign-up-mom", methods=["GET", "POST"])
 def sign_up_mom():
@@ -70,10 +69,9 @@ def sign_up_mom():
         password1 = request.form.get("password1")
         password2 = request.form.get("password2")
 
-        email_exists = Mom.query.filter_by(email=email).first()
         username_exists = Mom.query.filter_by(username=username).first()
 
-        if email_exists:
+        if email_in_use(email):
             flash('Email is already in use.', category='error')
         elif username_exists:
             flash('Username is already in use.', category='error')
@@ -102,3 +100,10 @@ def sign_up_mom():
 def logout():
     logout_user()
     return redirect(url_for("views.forum"))
+
+
+def email_in_use(email):
+    expert_exists = Expert.query.filter_by(email=email).first()
+    mom_exists = Mom.query.filter_by(email=email).first()
+
+    return expert_exists or mom_exists

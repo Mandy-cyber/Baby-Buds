@@ -1,24 +1,21 @@
 from flask import Blueprint, flash, render_template, redirect, url_for, request
 from flask_login import current_user, login_user, login_required, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from .models import Mom, Expert
+from .models import User
 from . import db
 
 auth = Blueprint("auth", __name__)
+
 
 @auth.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == 'POST':
         email = request.form.get("email")
-        user_type = request.form.get("user_type")
         password = request.form.get("password")
 
-        if user_type == 'Expert':
-            user = Expert.query.filter_by(email=email).first()
-        else:
-            user = Mom.query.filter_by(email=email).first()
+        user = User.query.filter_by(email=email).first()
 
-        if email_in_use(email):
+        if user:
             if check_password_hash(user.password, password):
                 flash("Logged in!", category='success')
                 login_user(user, remember=True)
@@ -39,24 +36,26 @@ def sign_up_expert():
         password1 = request.form.get("password1")
         password2 = request.form.get("password2")
 
-        if email_in_use(email):
+        # input validation
+        if email_exists(email):
             flash('Email is already in use.', category='error')
         elif password1 != password2:
             flash('Password don\'t match!', category='error')
         elif len(password1) < 6:
             flash('Password is too short.', category='error')
-        elif len(email) < 4:
+        elif len(email) < 4:  # could add further email validation
             flash("Email is invalid.", category='error')
         else:
-            new_expert = Expert(email=email, first_name=first_name,
-                                last_name=last_name, password=generate_password_hash(
-                                    password1, method='sha256'))
+            new_expert = User(email=email,
+                              username=first_name+" "+last_name,
+                              password=generate_password_hash(password1, method='sha256'),
+                              is_parent=False)
 
-            db.session.add(new_expert)
-            db.session.commit()
-            login_user(new_expert, remember=True)
-            flash('Expert account created!')
-            return redirect(url_for('views.forum'))
+        db.session.add(new_expert)
+        db.session.commit()
+        login_user(new_expert, remember=True)
+        flash('Expert account created!')
+        return redirect(url_for('views.forum'))
 
     return render_template("signup_expert.html", user=current_user)
 
@@ -69,28 +68,29 @@ def sign_up_mom():
         password1 = request.form.get("password1")
         password2 = request.form.get("password2")
 
-        username_exists = Mom.query.filter_by(username=username).first()
-
-        if email_in_use(email):
+        # input validation
+        if email_exists(email):
             flash('Email is already in use.', category='error')
-        elif username_exists:
-            flash('Username is already in use.', category='error')
-        elif password1 != password2:
+        if username_exists(username):
+            flash('Username already exists.', category='error')
+        if password1 != password2:
             flash('Password don\'t match!', category='error')
-        elif len(username) < 2:
+        if len(username) < 2:
             flash('Username is too short.', category='error')
-        elif len(password1) < 6:
+        if len(password1) < 6:
             flash('Password is too short.', category='error')
-        elif len(email) < 4:
+        if len(email) < 4:  # could add further email validation
             flash("Email is invalid.", category='error')
-        else:
-            new_mom = Mom(email=email, username=username, password=generate_password_hash(
-                password1, method='sha256'))
-            db.session.add(new_mom)
-            db.session.commit()
-            login_user(new_mom, remember=True)
-            flash('Mom Account Created!')
-            return redirect(url_for('views.forum'))
+
+        new_parent = User(email=email,
+                          username=username,
+                          password=generate_password_hash(password1, method='sha256'),
+                          is_parent=True)
+        db.session.add(new_parent)
+        db.session.commit()
+        login_user(new_parent, remember=True)
+        flash('Parent Account Created!')
+        return redirect(url_for('views.forum'))
 
     return render_template("signup_mom.html", user=current_user)
 
@@ -101,9 +101,14 @@ def logout():
     logout_user()
     return redirect(url_for("views.forum"))
 
+# ------------------------------------------------------------------------
+# VALIDATION HELP
+# ------------------------------------------------------------------------
 
-def email_in_use(email):
-    expert_exists = Expert.query.filter_by(email=email).first()
-    mom_exists = Mom.query.filter_by(email=email).first()
 
-    return expert_exists or mom_exists
+def email_exists(email):
+    return User.query.filter_by(email=email).first()
+
+
+def username_exists(username):
+    return User.query.filter_by(username=username).first()

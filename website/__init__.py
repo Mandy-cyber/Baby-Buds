@@ -21,7 +21,7 @@ def create_app():
     app.register_blueprint(views, url_prefix="/")
     app.register_blueprint(auth, url_prefix="/")
 
-    from .models import Mom, Expert, Post, Comment, Product
+    from .models import User
 
     with app.app_context():
         db.create_all()
@@ -32,13 +32,6 @@ def create_app():
 
     @lm.user_loader
     def load_user(id):
-        # load info about user given their id
-        mom = Mom.query.filter_by(id=id)
-        if mom:
-            return Mom.query.get(int(id))
-
-        expert = Expert.query.filter_by(id=id)
-        if expert:
-            return Expert.query.get(int(id))
+        return User.query.get(id)
 
     return app

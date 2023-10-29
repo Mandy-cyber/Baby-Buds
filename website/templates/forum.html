@@ -29,7 +29,8 @@ content %}
 </div>
 
 <!-- Make a post -->
-{% if user.can_comment == "false" %}
+<!-- Only parents may post -->
+{% if user.is_parent == True %}
 <div style="text-align: center">
   <a href="/create-post"><button id="make-post-button">Make a Post</button></a>
 </div>
@@ -50,10 +51,11 @@ content %}
         </div>
         <div class="col-8">
           <h2>{{ post.title }}</h2>
-          <h5 class="card-title">{{ post.mom.username }}</h5>
+          <h5 class="card-title">{{ post.author.username }}</h5>
         </div>
         <div class="col-2 text-right">
-          {% if user.email == post.mom.email and user.can_comment == 'false' %}
+          <!-- Only authors of comments or Experts may delete posts -->
+          {% if user.id == post.author or user.is_parent == False %}
           <a href="/delete-post/{{post.id}}" class="compost-button">
             <img
               class="compost-image"
@@ -71,9 +73,8 @@ content %}
         <h4>Comments</h4>
         {% for comment in post.comments %}
         <div class="comment">
-          <p>
-            <strong>{{ comment.expert.username }}</strong> {{ comment.text }}
-          </p>
+            <!-- REVISIT THIS TO FIX COMMENT USERNAMES --> 
+          <p><strong>{{ comment.author.username }}</strong> {{ comment.text }}</p>
         </div>
         {% endfor %}
         <br />

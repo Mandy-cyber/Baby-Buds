@@ -36,7 +36,7 @@ content %}
 </div>
 {% endif%}
 
-<!-- Blog post section -->
+<!-- blog posts -->
 {% for post in posts %}
 <div class="container mt-1">
   <div class="card">
@@ -54,7 +54,7 @@ content %}
           <h5 class="card-title">{{ post.author.username }}</h5>
         </div>
         <div class="col-2 text-right">
-          <!-- Only authors of comments or Experts may delete posts -->
+          <!-- only the post authors or an Expert may delete posts -->
           {% if user.id == post.author or user.is_parent == False %}
           <a href="/delete-post/{{post.id}}" class="compost-button">
             <img
@@ -68,13 +68,12 @@ content %}
 
       <p class="card-text">{{ post.content }}</p>
 
-      <!-- Comment Section -->
+      <!-- comments -->
       <div class="comment-section">
         <h4>Comments</h4>
         {% for comment in post.comments %}
         <div class="comment">
-            <!-- REVISIT THIS TO FIX COMMENT USERNAMES --> 
-          <p><strong>{{ comment.author.username }}</strong> {{ comment.text }}</p>
+          <p><strong>{{ comment.user.username }}</strong> {{ comment.text }}</p>
         </div>
         {% endfor %}
         <br />

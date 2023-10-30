@@ -8,7 +8,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(100), unique=True)
     username = db.Column(db.String(20), unique=True)
     password = db.Column(db.String(100))
-    is_parent = db.Column(db.Boolean) # revisit this w Alder
+    is_parent = db.Column(db.Boolean)
     posts = db.relationship('Post', backref='user', passive_deletes=True)
     products = db.relationship('Product', backref='user', passive_deletes=True)
     comments = db.relationship('Comment', backref='user', passive_deletes=True)
@@ -46,23 +46,3 @@ class Product(db.Model):
     price = db.Column(db.Integer(), nullable=False)
     category = db.Column(db.String(200))
     img = db.Column(db.String(200))
-
-# # represents a parent user with a unique username and email
-# class Parent(db.Model, UserMixin):
-#     id = db.Column(db.Integer)
-#     email = db.Column(db.String(100), primary_key=True)
-#     username = db.Column(db.String(20), unique=True)
-#     password = db.Column(db.String(100))
-#     posts = db.relationship('Post', backref='parent', passive_deletes=True)
-#     products = db.relationship('Product', backref='parent', passive_deletes=True)
-#     can_comment = db.Column(db.Boolean, default=False)
-#     profile_pic = db.Column(db.String(100), default="flowers.png")
-    
-# # represents an expert user with a unique email
-# class Expert(db.Model, UserMixin):
-#     id = db.Column(db.Integer)
-#     email = db.Column(db.String(100), primary_key=True)
-#     name = db.Column(db.String(20))
-#     password = db.Column(db.String(100))
-#     comments = db.relationship('Comment', backref='expert', passive_deletes=True)
-#     can_comment = db.Column(db.Boolean, default=True)

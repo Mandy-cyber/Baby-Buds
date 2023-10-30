@@ -44,7 +44,7 @@
 
 <br>
 
-  <!-- Blog post section -->
+  <!-- products -->
 <section>
   <div class="listingsGrid">
     <section id="productListings" class="listingsRow">
@@ -55,7 +55,7 @@
             <br><br>
             <h3> {{ product.name }} </h3>
             <p> {{ product.description }}</p>
-            <form method="POST" action="/send-email/{{ product.mom.email}}/{{ product.name }}">
+            <form method="POST" action="/send-email/{{ product.user.email}}/{{ product.name }}">
               <!--  onclick="inquireProduct('{{ product.name|tojson|safe }}')" -->
               <button type="submit" class="inquireButton">Inquire</button>
             </form>

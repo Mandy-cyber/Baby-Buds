@@ -11,58 +11,56 @@ views = Blueprint("views", __name__)
 # ------------------------------------------------------------------------
 # GENERAL
 # ------------------------------------------------------------------------
-
+# forum - default homepage
 @views.route("/forum")
-@views.route("/")  # default homepage
+@views.route("/")
 def forum():
     posts = Post.query.all()
     return render_template("forum.html", user=current_user, posts=posts)
 
-
+# resources
 @views.route("/resources")
 def resources():
     return render_template("resources.html", user=current_user)
 
+# @views.route("/profile", methods=["GET", "POST"])
+# @login_required
+# def profile():
+#     return render_template("profile.html", user=current_user)
 
-@views.route("/profile", methods=["GET", "POST"])
-@login_required
-def profile():
-    return render_template("profile.html", user=current_user)
-
-
+# marketplace
 @views.route("/hand-me-down", methods=["GET", "POST"])
 def hand_me_down():
     products = Product.query.all()
     return render_template("hand_me_down.html", products=products, user=current_user)
 
-
+# user signup
 @views.route("/signup")
 def signup():
     return render_template('mom_or_expert.html', user=current_user)
 
-
 # ------------------------------------------------------------------------
 # FORUM PAGES
 # ------------------------------------------------------------------------
-
+# baby health posts
 @views.route("/baby-health")
 def baby_health():
     posts = Post.query.filter_by(category='Baby Health').all()
     return render_template("forum.html", user=current_user, posts=posts)
 
-
+# mom health posts
 @views.route("/mom-health")
 def mom_health():
     posts = Post.query.filter_by(category='Mom Health').all()
     return render_template("forum.html", user=current_user, posts=posts)
 
-
+# tips posts
 @views.route("/tips-and-tricks")
 def tips_and_tricks():
     posts = Post.query.filter_by(category='Tips and Tricks').all()
     return render_template("forum.html", user=current_user, posts=posts)
 
-
+# support posts
 @views.route("/support")
 def support():
     posts = Post.query.filter_by(category='Support').all()
@@ -71,7 +69,7 @@ def support():
 # ------------------------------------------------------------------------
 # POSTS
 # ------------------------------------------------------------------------
-
+# create a post on the forum
 @views.route("/create-post", methods=['GET', 'POST'])
 @login_required
 def create_post():
@@ -91,15 +89,15 @@ def create_post():
 
     return render_template('create_post.html', user=current_user)
 
-
-@views.route("/delete-post/<post_id>") # TODO what is this doing?
+# delete a post (only the parent author)
+@views.route("/delete-post/<post_id>")
 @login_required
 def delete_post(post_id):
     post = Post.query.filter_by(id=post_id).first()
 
     if not post:
         flash('Post does not exist.', category='error')
-    elif current_user.id != post.author: # TODO correct here? is post.id in sample code
+    elif current_user.id != post.author:
         flash('You do not have permission to delete this post.', category='error')
     else:
         db.session.delete(post)
@@ -110,8 +108,8 @@ def delete_post(post_id):
 # ------------------------------------------------------------------------
 # COMMENTS
 # ------------------------------------------------------------------------
-
-@views.route("/create-comment/<post_id>", methods=['POST']) # TODO same q here
+# write a comment (only experts)
+@views.route("/create-comment/<post_id>", methods=['POST'])
 @login_required
 def create_comment(post_id):
     text = request.form.get('comment')
@@ -129,7 +127,8 @@ def create_comment(post_id):
 
     return redirect(url_for('views.forum'))
 
-
+# delete a comment (only experts)
+# TODO add to frontend
 @views.route("/delete-comment/<comment_id>")
 @login_required
 def delete_comment(comment_id):
@@ -148,7 +147,7 @@ def delete_comment(comment_id):
 # ------------------------------------------------------------------------
 # PRODUCTS
 # ------------------------------------------------------------------------
-
+# post a product on the marketplace
 @views.route("/list-product", methods=['GET', 'POST'])
 @login_required
 def list_product():
@@ -178,7 +177,8 @@ def list_product():
 
     return render_template('list_product.html', user=current_user)
 
-
+# delete a product from the marketplace
+# TODO add to frontend
 @views.route("/delete-product/<product_id>")
 @login_required
 def delete_product(product_id):
@@ -197,8 +197,8 @@ def delete_product(product_id):
 # ------------------------------------------------------------------------
 # EMAIL SENDING
 # ------------------------------------------------------------------------
-
-@views.route("/send-email/<email1>/<prod_name>", methods=['GET', 'POST'])
+# send an inquiry about a product
+@views.route("/send-email/<email>/<prod_name>", methods=['GET', 'POST'])
 def send_email(email, prod_name):
     if request.method == "POST":
         subject = f"Inquiring About: {prod_name}"

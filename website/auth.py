@@ -6,14 +6,15 @@ from . import db
 
 auth = Blueprint("auth", __name__)
 
-
+# user login
 @auth.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == 'POST':
         email = request.form.get("email")
         password = request.form.get("password")
 
-        user = User.query.filter_by(email=email).first()
+        # an existing account with the given email, or None
+        user = email_exists(email)
 
         if user:
             if check_password_hash(user.password, password):
@@ -26,7 +27,7 @@ def login():
             flash('Email does not exist.', category='error')
     return render_template("login.html", user=current_user)
 
-
+# expert signup
 @auth.route("/sign-up-expert", methods=["GET", "POST"])
 def sign_up_expert():
     if request.method == 'POST':
@@ -36,14 +37,14 @@ def sign_up_expert():
         password1 = request.form.get("password1")
         password2 = request.form.get("password2")
 
-        # input validation
+        # TODO abstract input validation
         if email_exists(email):
             flash('Email is already in use.', category='error')
         elif password1 != password2:
             flash('Password don\'t match!', category='error')
         elif len(password1) < 6:
             flash('Password is too short.', category='error')
-        elif len(email) < 4:  # could add further email validation
+        elif len(email) < 4:  # TODO add further email validation
             flash("Email is invalid.", category='error')
         else:
             new_expert = User(email=email,
@@ -59,7 +60,7 @@ def sign_up_expert():
 
     return render_template("signup_expert.html", user=current_user)
 
-
+# parent signup
 @auth.route("/sign-up-mom", methods=["GET", "POST"])
 def sign_up_mom():
     if request.method == 'POST':
@@ -68,7 +69,7 @@ def sign_up_mom():
         password1 = request.form.get("password1")
         password2 = request.form.get("password2")
 
-        # input validation
+        # TODO abstract input validation
         if email_exists(email):
             flash('Email is already in use.', category='error')
         if username_exists(username):
@@ -79,7 +80,7 @@ def sign_up_mom():
             flash('Username is too short.', category='error')
         if len(password1) < 6:
             flash('Password is too short.', category='error')
-        if len(email) < 4:  # could add further email validation
+        if len(email) < 4:  # TODO add further email validation
             flash("Email is invalid.", category='error')
 
         new_parent = User(email=email,
@@ -94,7 +95,7 @@ def sign_up_mom():
 
     return render_template("signup_mom.html", user=current_user)
 
-
+# logout - redirects to Forum home
 @auth.route("/logout")
 @login_required
 def logout():
@@ -105,10 +106,12 @@ def logout():
 # VALIDATION HELP
 # ------------------------------------------------------------------------
 
-
+# returns the user associated with the given email, if one exists
+# None otherwise
 def email_exists(email):
     return User.query.filter_by(email=email).first()
 
-
+# returns the user associated with the given username, if one exists
+# None otherwise
 def username_exists(username):
     return User.query.filter_by(username=username).first()

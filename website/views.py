@@ -23,11 +23,6 @@ def forum():
 def resources():
     return render_template("resources.html", user=current_user)
 
-# @views.route("/profile", methods=["GET", "POST"])
-# @login_required
-# def profile():
-#     return render_template("profile.html", user=current_user)
-
 # marketplace
 @views.route("/hand-me-down", methods=["GET", "POST"])
 def hand_me_down():

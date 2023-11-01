@@ -4,15 +4,38 @@ from sqlalchemy.sql import func
 
 # represents a Baby Buds user
 class User(db.Model, UserMixin):
+    __tablename__ = 'user'
+
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), unique=True)
     username = db.Column(db.String(20), unique=True)
     password = db.Column(db.String(100))
-    is_parent = db.Column(db.Boolean)
+    profile_pic = db.Column(db.String(100), default="flowers.png")
+    user_type = db.Column(db.String(20))
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'user',
+        'polymorphic_on': user_type
+    }
+
+# represents a Parent user with posts and products
+class Parent(User):
+    __tablename__ = 'parent'
+
+    parent_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     posts = db.relationship('Post', backref='user', passive_deletes=True)
     products = db.relationship('Product', backref='user', passive_deletes=True)
+
+    __mapper_args__ = {'polymorphic_identity': 'parent_user'}
+
+# represents an Expert user with comments
+class Expert(User):
+    __tablename__ = 'expert'
+
+    expert_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     comments = db.relationship('Comment', backref='user', passive_deletes=True)
-    profile_pic = db.Column(db.String(100), default="flowers.png")
+
+    __mapper_args__ = {'polymorphic_identity': 'expert_user'}
 
 # represents a post in the Forum
 class Post(db.Model):

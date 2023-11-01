@@ -1,7 +1,7 @@
 from flask import Blueprint, flash, render_template, redirect, url_for, request
 from flask_login import current_user, login_user, login_required, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from .models import User
+from .models import User, Parent, Expert
 from . import db
 
 auth = Blueprint("auth", __name__)
@@ -47,10 +47,10 @@ def sign_up_expert():
         elif len(email) < 4:  # TODO add further email validation
             flash("Email is invalid.", category='error')
         else:
-            new_expert = User(email=email,
-                              username=first_name+" "+last_name,
-                              password=generate_password_hash(password1, method='sha256'),
-                              is_parent=False)
+            new_expert = Expert(email=email,
+                                username=first_name+" "+last_name,
+                                password=generate_password_hash(password1, method='sha256'),
+                                user_type="expert_user")
 
         db.session.add(new_expert)
         db.session.commit()
@@ -72,21 +72,22 @@ def sign_up_mom():
         # TODO abstract input validation
         if email_exists(email):
             flash('Email is already in use.', category='error')
-        if username_exists(username):
+        elif username_exists(username):
             flash('Username already exists.', category='error')
-        if password1 != password2:
+        elif password1 != password2:
             flash('Password don\'t match!', category='error')
-        if len(username) < 2:
+        elif len(username) < 2:
             flash('Username is too short.', category='error')
-        if len(password1) < 6:
+        elif len(password1) < 6:
             flash('Password is too short.', category='error')
-        if len(email) < 4:  # TODO add further email validation
+        elif len(email) < 4:  # TODO add further email validation
             flash("Email is invalid.", category='error')
-
-        new_parent = User(email=email,
-                          username=username,
-                          password=generate_password_hash(password1, method='sha256'),
-                          is_parent=True)
+        else:
+            new_parent = Parent(email=email,
+                        username=username,
+                        password=generate_password_hash(password1, method='sha256'),
+                        user_type="parent_user")
+        
         db.session.add(new_parent)
         db.session.commit()
         login_user(new_parent, remember=True)

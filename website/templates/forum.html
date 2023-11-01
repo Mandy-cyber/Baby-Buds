@@ -30,7 +30,7 @@ content %}
 
 <!-- Make a post -->
 <!-- Only parents may post -->
-{% if user.is_parent == True %}
+{% if user.user_type == "parent_user" %}
 <div style="text-align: center">
   <a href="/create-post"><button id="make-post-button">Make a Post</button></a>
 </div>
@@ -55,7 +55,7 @@ content %}
         </div>
         <div class="col-2 text-right">
           <!-- only the post authors or an Expert may delete posts -->
-          {% if user.id == post.author or user.is_parent == False %}
+          {% if user.id == post.author or user.user_type == "expert_user" %}
           <a href="/delete-post/{{post.id}}" class="compost-button">
             <img
               class="compost-image"

@@ -51,7 +51,7 @@ content %}
         </div>
         <div class="col-8">
           <h2>{{ post.title }}</h2>
-          <h5 class="card-title">{{ post.author.username }}</h5>
+          <h5 class="card-title">{{ post.user.username }}</h5>
         </div>
         <div class="col-2 text-right">
           <!-- only the post authors or an Expert may delete posts -->
@@ -77,6 +77,7 @@ content %}
         </div>
         {% endfor %}
         <br />
+        {% if user.user_type == "expert_user" %}
         <form method="POST" action="/create-comment/{{post.id}}">
           <label for="text">Add a Comment</label>
           <input
@@ -89,6 +90,7 @@ content %}
           <br />
           <button type="submit" class="submit-buttons">Submit</button>
         </form>
+        {% endif %}
         <br />
       </div>
     </div>

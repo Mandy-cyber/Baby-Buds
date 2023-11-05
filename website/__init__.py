@@ -3,9 +3,9 @@ from flask_sqlalchemy import SQLAlchemy
 from os import path
 from flask_login import LoginManager
 
+# set up database
 db = SQLAlchemy()
 DB_NAME = "database.db"
-
 
 def create_app():
     app = Flask(__name__)
@@ -18,6 +18,7 @@ def create_app():
     from .views import views
     from .auth import auth
 
+    # blueprints group common routes
     app.register_blueprint(views, url_prefix="/")
     app.register_blueprint(auth, url_prefix="/")
 
@@ -26,8 +27,10 @@ def create_app():
     with app.app_context():
         db.create_all()
 
-    lm = LoginManager()  # login manager creates a session, default = 30 days
-    lm.login_view = "auth.login"  # redirects to login page if they are not logged in
+    # login manager creates a session, default = 30 days
+    lm = LoginManager()
+    # redirects to login page if they are not logged in
+    lm.login_view = "auth.login"
     lm.init_app(app)
 
     @lm.user_loader

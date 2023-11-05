@@ -28,15 +28,15 @@ content %}
   /></a>
 </div>
 
-<!-- Make a post -->
-<!-- Only parents may post -->
+<!-- Make a Post -->
+<!-- Only Parent users may post -->
 {% if user.user_type == "parent_user" %}
 <div style="text-align: center">
   <a href="/create-post"><button id="make-post-button">Make a Post</button></a>
 </div>
 {% endif%}
 
-<!-- blog posts -->
+<!-- Blog Posts -->
 {% for post in posts %}
 <div class="container mt-1">
   <div class="card">
@@ -54,8 +54,8 @@ content %}
           <h5 class="card-title">{{ post.user.username }}</h5>
         </div>
         <div class="col-2 text-right">
-          <!-- only the post authors or an Expert may delete posts -->
-          {% if user.id == post.author or user.user_type == "expert_user" %}
+          <!-- only the Post's author may delete a Post -->
+          {% if user.id == post.author %}
           <a href="/delete-post/{{post.id}}" class="compost-button">
             <img
               class="compost-image"
@@ -68,7 +68,7 @@ content %}
 
       <p class="card-text">{{ post.content }}</p>
 
-      <!-- comments -->
+      <!-- Comment section -->
       <div class="comment-section">
         <h4>Comments</h4>
         {% for comment in post.comments %}
@@ -77,6 +77,7 @@ content %}
         </div>
         {% endfor %}
         <br />
+        <!-- only an Expert user may comment on a Post -->
         {% if user.user_type == "expert_user" %}
         <form method="POST" action="/create-comment/{{post.id}}">
           <label for="text">Add a Comment</label>

@@ -37,14 +37,13 @@ def sign_up_expert():
         password1 = request.form.get("password1")
         password2 = request.form.get("password2")
 
-        # TODO abstract input validation
         if email_exists(email):
             flash('Email is already in use.', category='error')
         elif password1 != password2:
             flash('Password don\'t match!', category='error')
         elif len(password1) < 6:
             flash('Password is too short.', category='error')
-        elif len(email) < 4:  # TODO add further email validation
+        elif len(email) < 4:
             flash("Email is invalid.", category='error')
         else:
             new_expert = Expert(email=email,
@@ -69,7 +68,6 @@ def sign_up_mom():
         password1 = request.form.get("password1")
         password2 = request.form.get("password2")
 
-        # TODO abstract input validation
         if email_exists(email):
             flash('Email is already in use.', category='error')
         elif username_exists(username):
@@ -80,7 +78,7 @@ def sign_up_mom():
             flash('Username is too short.', category='error')
         elif len(password1) < 6:
             flash('Password is too short.', category='error')
-        elif len(email) < 4:  # TODO add further email validation
+        elif len(email) < 4:
             flash("Email is invalid.", category='error')
         else:
             new_parent = Parent(email=email,
@@ -96,17 +94,17 @@ def sign_up_mom():
 
     return render_template("signup_mom.html", user=current_user)
 
-# logout - redirects to Forum home
+# logout
 @auth.route("/logout")
 @login_required
 def logout():
     logout_user()
+    # redirects logged out user to forum
     return redirect(url_for("views.forum"))
 
 # ------------------------------------------------------------------------
 # VALIDATION HELP
 # ------------------------------------------------------------------------
-
 # returns the user associated with the given email, if one exists
 # None otherwise
 def email_exists(email):

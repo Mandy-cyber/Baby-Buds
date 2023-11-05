@@ -92,6 +92,7 @@ def delete_post(post_id):
 
     if not post:
         flash('Post does not exist.', category='error')
+    # backup check - frontend doesn't display the delete option to non-author users
     elif current_user.id != post.author:
         flash('You do not have permission to delete this post.', category='error')
     else:
@@ -103,7 +104,7 @@ def delete_post(post_id):
 # ------------------------------------------------------------------------
 # COMMENTS
 # ------------------------------------------------------------------------
-# write a comment (only experts)
+# write a comment
 @views.route("/create-comment/<post_id>", methods=['POST'])
 @login_required
 def create_comment(post_id):
@@ -131,6 +132,7 @@ def delete_comment(comment_id):
 
     if not comment:
         flash('Post does not exist.', category='error')
+    # backup check - frontend doesn't display the delete option to non-expert users
     elif current_user.id != comment.author and current_user.id != comment.post.author:
         flash('You do not have permission to delete this comment.', category='error')
     else:
@@ -172,7 +174,7 @@ def list_product():
 
     return render_template('list_product.html', user=current_user)
 
-# delete a product from the marketplace
+# delete a product from the marketplace (only parent authors)
 # TODO add to frontend
 @views.route("/delete-product/<product_id>")
 @login_required
@@ -181,6 +183,7 @@ def delete_product(product_id):
 
     if not product:
         flash('Product does not exist.', category='error')
+    # backup check - frontend doesn't display the delete option to non-author users
     elif current_user.id != product.author:
         flash('You do not have permission to delete this post.', category='error')
     else:

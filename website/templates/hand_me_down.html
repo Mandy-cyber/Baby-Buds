@@ -39,9 +39,9 @@
 </div>
 
 <br>
-
+{% if user.user_type == "parent_user" %}
 <div style="text-align: center;"><a href="/list-product"><button id="submit-listing-button">Submit a Listing</button></a></div>
-
+{% endif %}
 <br>
 
   <!-- products -->
